@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,28 +21,27 @@ interface Answer {
   likes: number;
 }
 
+const STORAGE_KEY = 'community_posts';
+
 export default function Community() {
-  const [posts, setPosts] = useState<Post[]>([
-    {
-      id: 1,
-      author: "John Smith",
-      question: "What's the best time to plant wheat in a Mediterranean climate?",
-      timestamp: "2 hours ago",
-      answers: [
-        {
-          id: 1,
-          author: "Agricultural Expert",
-          content: "In Mediterranean climates, the best time to plant wheat is typically in late fall (October-November). This allows the wheat to establish itself during the mild, wet winter months.",
-          timestamp: "1 hour ago",
-          likes: 5,
-        },
-      ],
-    },
-  ]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [newQuestion, setNewQuestion] = useState("");
   const [answerContent, setAnswerContent] = useState("");
   const [activePostId, setActivePostId] = useState<number | null>(null);
   const { toast } = useToast();
+
+  // Load posts from localStorage on component mount
+  useEffect(() => {
+    const savedPosts = localStorage.getItem(STORAGE_KEY);
+    if (savedPosts) {
+      setPosts(JSON.parse(savedPosts));
+    }
+  }, []);
+
+  // Save posts to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  }, [posts]);
 
   const handlePostQuestion = () => {
     if (!newQuestion.trim()) {
@@ -55,10 +54,10 @@ export default function Community() {
     }
 
     const newPost: Post = {
-      id: posts.length + 1,
+      id: Date.now(), // Using timestamp as ID for uniqueness
       author: localStorage.getItem("userName") || "Anonymous",
       question: newQuestion,
-      timestamp: "Just now",
+      timestamp: new Date().toLocaleString(),
       answers: [],
     };
 
@@ -85,10 +84,10 @@ export default function Community() {
     }
 
     const newAnswer: Answer = {
-      id: Math.random(),
+      id: Date.now(),
       author: localStorage.getItem("userName") || "Anonymous",
       content: answerContent,
-      timestamp: "Just now",
+      timestamp: new Date().toLocaleString(),
       likes: 0,
     };
 
