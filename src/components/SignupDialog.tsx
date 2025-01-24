@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function SignupDialog() {
   const [open, setOpen] = useState(false);
@@ -20,15 +21,23 @@ export function SignupDialog() {
     farmType: "",
   });
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle the form submission
+    // Store user data in localStorage for demo purposes
+    localStorage.setItem("userName", formData.name);
+    localStorage.setItem("userEmail", formData.email);
+    localStorage.setItem("userFarmType", formData.farmType);
+    
     toast({
       title: "Welcome to our community!",
-      description: "We'll be in touch with next steps soon.",
+      description: "You're now being redirected to the community page.",
     });
+    
     setOpen(false);
+    // Redirect to community page
+    navigate("/community");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
