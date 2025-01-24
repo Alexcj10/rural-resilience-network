@@ -1,6 +1,7 @@
 import { Book, Leaf, Users, Sprout } from "lucide-react";
 import WeatherWidget from "@/components/WeatherWidget";
 import ResourceCard from "@/components/ResourceCard";
+import { SignupDialog } from "@/components/SignupDialog";
 
 const Index = () => {
   return (
@@ -14,9 +15,7 @@ const Index = () => {
           <p className="text-xl text-gray-600 mb-8">
             Empowering rural farmers with knowledge, resources, and community support
           </p>
-          <button className="bg-primary hover:bg-primary-light text-white px-8 py-3 rounded-lg transition-colors">
-            Join Our Community
-          </button>
+          <SignupDialog />
         </div>
       </section>
 
@@ -66,9 +65,7 @@ const Index = () => {
             Join our network of farmers and agricultural experts. Get access to resources, 
             support, and the latest farming practices.
           </p>
-          <button className="bg-secondary hover:bg-secondary/90 text-primary font-semibold px-8 py-3 rounded-lg transition-colors">
-            Get Started
-          </button>
+          <SignupDialog />
         </div>
       </section>
     </div>
