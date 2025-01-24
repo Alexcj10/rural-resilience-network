@@ -40,6 +40,8 @@ export default function Community() {
     },
   ]);
   const [newQuestion, setNewQuestion] = useState("");
+  const [answerContent, setAnswerContent] = useState("");
+  const [activePostId, setActivePostId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const handlePostQuestion = () => {
@@ -69,10 +71,42 @@ export default function Community() {
   };
 
   const handleAnswer = (postId: number) => {
-    // This would typically open a dialog or form to submit an answer
+    setActivePostId(postId);
+  };
+
+  const submitAnswer = (postId: number) => {
+    if (!answerContent.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your answer",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newAnswer: Answer = {
+      id: Math.random(),
+      author: localStorage.getItem("userName") || "Anonymous",
+      content: answerContent,
+      timestamp: "Just now",
+      likes: 0,
+    };
+
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          answers: [...post.answers, newAnswer],
+        };
+      }
+      return post;
+    }));
+
+    setAnswerContent("");
+    setActivePostId(null);
     toast({
-      title: "Coming Soon",
-      description: "This feature will be available soon!",
+      title: "Success",
+      description: "Your answer has been posted!",
     });
   };
 
@@ -129,15 +163,30 @@ export default function Community() {
                 ))}
               </div>
 
-              {/* Answer Button */}
-              <Button
-                variant="outline"
-                className="mt-4 gap-2"
-                onClick={() => handleAnswer(post.id)}
-              >
-                <MessageCircle className="w-4 h-4" />
-                Answer
-              </Button>
+              {/* Answer Input */}
+              {activePostId === post.id ? (
+                <div className="mt-4 space-y-4">
+                  <Textarea
+                    placeholder="Write your answer..."
+                    value={answerContent}
+                    onChange={(e) => setAnswerContent(e.target.value)}
+                    className="mb-2"
+                  />
+                  <div className="flex gap-2">
+                    <Button onClick={() => submitAnswer(post.id)}>Submit Answer</Button>
+                    <Button variant="outline" onClick={() => setActivePostId(null)}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="mt-4 gap-2"
+                  onClick={() => handleAnswer(post.id)}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Answer
+                </Button>
+              )}
             </div>
           ))}
         </div>
